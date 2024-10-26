@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Multiply Game</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background-color: #f4f4f9; 
+            color: #333; 
+        }
+        h1 {
+            color: #4a90e2;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.1em;
+            color: #666;
+        }
+        label {
+            font-weight: bold;
+        }
+        input { 
+            margin: 5px; 
+            padding: 8px; 
+            width: 60px; 
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #4a90e2; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #357ABD;
+        }
+        .matrix {
+            display: inline-block; 
+            margin: 10px; 
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #matrixContainer {
+            margin-top: 20px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+            background-color: #e9f5ff;
+            padding: 15px;
+            border: 1px solid #4a90e2;
+            border-radius: 5px;
+            display: inline-block;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Matrix Multiplication Game</h1>
+    <p>Enter the size of matrices:</p>
+    <label for="rowsA">Rows in Matrix A:</label>
+    <input type="number" id="rowsA" min="1" max="5" value="2"><br>
+    <label for="colsA">Columns in Matrix A (Rows in Matrix B):</label>
+    <input type="number" id="colsA" min="1" max="5" value="2"><br>
+    <label for="colsB">Columns in Matrix B:</label>
+    <input type="number" id="colsB" min="1" max="5" value="2"><br>
+    <button onclick="createMatrixFields()">Create Matrices</button>
+
+    <div id="matrixContainer" style="display:none;">
+        <div class="matrix" id="matrixA">
+            <h2>Matrix A</h2>
+        </div>
+        <div class="matrix" id="matrixB">
+            <h2>Matrix B</h2>
+        </div>
+        <button onclick="multiplyMatrices()">Multiply</button>
+        <h2>Result:</h2>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function createMatrixFields() {
+            const rowsA = Number(document.getElementById('rowsA').value);
+            const colsA = Number(document.getElementById('colsA').value);
+            const colsB = Number(document.getElementById('colsB').value);
+
+            const matrixAContainer = document.getElementById('matrixA');
+            const matrixBContainer = document.getElementById('matrixB');
+            matrixAContainer.innerHTML = '<h2>Matrix A</h2>';
+            matrixBContainer.innerHTML = '<h2>Matrix B</h2>';
+
+            Array.from({ length: rowsA }).forEach((_, i) => {
+                Array.from({ length: colsA }).forEach((_, j) => {
+                    const inputA = document.createElement('input');
+                    inputA.type = 'number';
+                    inputA.id = `a${i}${j}`;
+                    matrixAContainer.appendChild(inputA);
+                });
+                matrixAContainer.appendChild(document.createElement('br'));
+            });
+
+            Array.from({ length: colsA }).forEach((_, i) => {
+                Array.from({ length: colsB }).forEach((_, j) => {
+                    const inputB = document.createElement('input');
+                    inputB.type = 'number';
+                    inputB.id = `b${i}${j}`;
+                    matrixBContainer.appendChild(inputB);
+                });
+                matrixBContainer.appendChild(document.createElement('br'));
+            });
+
+            document.getElementById('matrixContainer').style.display = 'block';
+        }
+
+        function multiplyMatrices() {
+            const rowsA = Number(document.getElementById('rowsA').value);
+            const colsA = Number(document.getElementById('colsA').value);
+            const colsB = Number(document.getElementById('colsB').value);
+
+            const matrixA = Array.from({ length: rowsA }, (_, i) => 
+                Array.from({ length: colsA }, (_, j) => 
+                    Number(document.getElementById(`a${i}${j}`).value)
+                )
+            );
+
+            const matrixB = Array.from({ length: colsA }, (_, i) => 
+                Array.from({ length: colsB }, (_, j) => 
+                    Number(document.getElementById(`b${i}${j}`).value)
+                )
+            );
+
+            const result = Array.from({ length: rowsA }, () => Array(colsB).fill(0));
+
+            matrixA.forEach((rowA, i) => {
+                matrixB[0].forEach((_, j) => {
+                    result[i][j] = rowA.reduce((sum, _, k) => sum + (rowA[k] * matrixB[k][j]), 0);
+                });
+            });
+
+            let resultText = 'Matrix C:<br>';
+            result.forEach(row => {
+                resultText += '[ ' + row.join(', ') + ' ]<br>';
+            });
+            document.getElementById('result').innerHTML = resultText;
+        }
+    </script>
+</body>
+</html>
+
